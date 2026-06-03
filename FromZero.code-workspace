@@ -5,7 +5,15 @@
 		},
 		{
 			"path": "../FE_B"
+		},
+		{
+			"path": "../../CLang/learnCPages"
+		},
+		{
+			"path": "../LearningAlgorithms/src"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "FromZero"
+	}
 }
