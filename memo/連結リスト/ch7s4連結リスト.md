@@ -1,7 +1,5 @@
 # 連結リスト
 
-
-
 ![図解：連結リスト入門](img/p3c4.jpg)
 
 ## イントロダクション
@@ -95,17 +93,6 @@ headはノード1のポインタ         nextはノード2のポインタ
 
 実際にコードを見て、最初のノードを作成するプロセスを確認しましょう。
 
-疑似言語で書くと、以下のようになります。
-
-```text
-node_t:  head ← NULL;
-
-head.val ← 1;
-head.next ← NULL;
-```
-
-C言語では、mallocでノードごとにメモリを確保するステップが入ります。
-
 ```c
 node_t * head = NULL;
 head = (node_t *) malloc(sizeof(node_t));
@@ -149,16 +136,6 @@ head->next = NULL;
 2. current ポインタが NULL でない間、以下の処理を繰り返します。 a. current が指すノードに対して処理（値の表示など）を行います。 b. current ポインタを、current->next が指す次のノードへ進めます。
 3. current ポインタが NULL になったら、リストの末尾に到達したことを意味し、ループを終了します。
 
-疑似言語
-
-```text
-node_t: current ← head;
-
-while (currentが未定義でない)
-    current.valを表示
-    current ← current.next
-endwhile
-```
 
 **コード例**
 
@@ -192,33 +169,6 @@ void print_list(node_t * head) {
 2. エッジケース: リストが空（head が NULL）の場合、新しいノードをリストの先頭にします。
 3. リストが空でない場合、作業用の current ポインタでリストの最後のノードまで移動します。
 4. 最後のノードの next ポインタが、新しいノードを指すように設定します。
-
-疑似言語
-
-```text
-〇append_node(node_t: head, 整数型 val)
-    node_t: new_node
-
-    new_node.val ← val;
-    new_node.next ← NULL;
-
-    // リストが空の場合、新しいノードをheadにして終了
-    if (headが未定義)
-        head ← new_node;
-        return;
-    endif
-
-    // リストが空でない場合
-    node_t: current ← head
-    // 最後のノードまで移動
-    while (current.nextが未定義でない)
-        current ← current.next;
-    endwhile
-
-    // 最後のノードの次に新しいノードを連結
-    current.next ← new_node;
-```
-
 
 **コード例**
 
@@ -267,17 +217,6 @@ append_node 関数の引数が node_t ** head となっている点に、あら�
 2. 新しいノードの next ポインタが、現在のリストの先頭 (head) を指すようにします。
 3. head ポインタ自体を、新しく作成したノードを指すように更新します。
 
-疑似言語
-
-```text
-〇push(node_t: head, 整数型: val)
-    node_t: new_node
-
-    new_node.val ← val;
-    new_node->next ← head;
-    head ← new_node;
-```
-
 **コード例**
 
 ```c
@@ -308,25 +247,6 @@ void push(node_t ** head, int val) {
 3. 現在の head が指す先頭ノードのメモリを free() で解放します。
 4. head ポインタを、ステップ2で保存しておいた2番目のノードを指すように更新します。
 
-疑似言語
-
-```text
-整数型 pop(node_t: head)
-    整数型: retval ← -1;
-    node_t: next_node ← 未定義の値
-
-    // エッジケース: 空のリスト
-    if (headが未定義であれば)
-        return -1;  // 異常終了
-    endif
-
-    next_node ← head.next
-    retval ← head.val
-    head ← next_node
-
-    return retval;
-```
-
 **コード例**
 
 ```c
@@ -355,38 +275,6 @@ int pop(node_t ** head) {
 **アルゴリズム**
 
 リストの末尾を削除するには、末尾から2番目のノードを見つける必要があります。なぜなら、最後のノードを削除した後、その一つ手前のノードの next ポインタを NULL に更新する必要があるからです。
-
-疑似言語
-
-```text
-〇整数型: remove_last(node_t: head)
-    整数型 retval ← -1
-    node_t: current
-
-    // エッジケース: リストが空
-    if (headが未定義)
-        return -1;
-    endif
-
-    // エッジケース: リストに要素が1つだけ
-    if (head.nextが未定義)
-        retval ← head.val
-        head ← 未定義の値 // 呼び出し元のheadを未定義に更新
-        return retval;
-    endif
-
-    // 末尾から2番目のノードまで移動
-    current ← head
-    while ((current.next).nextが未定義でない)
-        current ← current.next
-    endwhile
-
-    // current は末尾から2番目のノードを指している
-    retval = (current.next).val
-    current.next ← 未定義の値
-
-    return retval;
-```
 
 **コード例**
 
@@ -434,39 +322,6 @@ int remove_last(node_t ** head) {
 2. 削除対象のノード（手前のノードの next が指すノード）を一時的なポインタに保存します。
 3. 手前のノードの next ポインタを、削除対象ノードの next ポインタが指していたノードに繋ぎ変えます。これにより、リストから削除対象ノードがバイパスされます。
 4. ステップ2で保存した一時ポインタを使い、削除対象ノードのメモリを free() で解放します。
-
-疑似言語
-
-```text
-〇整数型: remove_by_index(node_t: head, 整数型: n)
-    node_t: current ← head
-    node_t: temp_node ← NULL
-    整数型: i ← 0
-    整数型: retval ← -1;
-
-    // エッジケース: 先頭(インデックス0)を削除する場合
-    if (nが0)
-        return pop(head);
-    endif
-    
-    // 削除対象の「一つ手前」のノードまで移動
-    for (i = 0; i < n - 1; i++) {
-        if (current->next == NULL) {
-            return -1; // インデックスが範囲外
-        }
-        current = current->next;
-    }
-
-    // 削除対象のノードが存在しない場合 (n-1番目はあるがn番目はない)
-    if (current.nextが未定義)
-        return -1;
-
-    temp_node ← current.next
-    retval ← temp_node.val
-    current.next ← temp_node.next // リンクの繋ぎ変え
-
-    return retval
-```
 
 **コード例**
 
